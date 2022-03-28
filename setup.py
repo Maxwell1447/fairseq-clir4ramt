@@ -69,26 +69,26 @@ class NumpyExtension(Extension):
 
 
 extensions = [
-    Extension(
-        "fairseq.libbleu",
-        sources=[
-            "fairseq/clib/libbleu/libbleu.cpp",
-            "fairseq/clib/libbleu/module.cpp",
-        ],
-        extra_compile_args=extra_compile_args,
-    ),
-    NumpyExtension(
-        "fairseq.data.data_utils_fast",
-        sources=["fairseq/data/data_utils_fast.pyx"],
-        language="c++",
-        extra_compile_args=extra_compile_args,
-    ),
-    NumpyExtension(
-        "fairseq.data.token_block_utils_fast",
-        sources=["fairseq/data/token_block_utils_fast.pyx"],
-        language="c++",
-        extra_compile_args=extra_compile_args,
-    ),
+    # Extension(
+    #     "fairseq.libbleu",
+    #     sources=[
+    #         "fairseq/clib/libbleu/libbleu.cpp",
+    #         "fairseq/clib/libbleu/module.cpp",
+    #     ],
+    #     extra_compile_args=extra_compile_args,
+    # ),
+    # NumpyExtension(
+    #     "fairseq.data.data_utils_fast",
+    #     sources=["fairseq/data/data_utils_fast.pyx"],
+    #     language="c++",
+    #     extra_compile_args=extra_compile_args,
+    # ),
+    # NumpyExtension(
+    #     "fairseq.data.token_block_utils_fast",
+    #     sources=["fairseq/data/token_block_utils_fast.pyx"],
+    #     language="c++",
+    #     extra_compile_args=extra_compile_args,
+    # ),
 ]
 
 
@@ -99,29 +99,38 @@ try:
     # torch is not available when generating docs
     from torch.utils import cpp_extension
 
+    # extensions.extend(
+    #     [
+    #         cpp_extension.CppExtension(
+    #             "fairseq.libbase",
+    #             sources=[
+    #                 "fairseq/clib/libbase/balanced_assignment.cpp",
+    #             ],
+    #         )
+    #     ]
+    # )
+    # extensions.extend(
+    #     [
+    #         cpp_extension.CppExtension(
+    #             "fairseq.libnat",
+    #             sources=[
+    #                 "fairseq/clib/libnat/edit_dist.cpp",
+    #             ],
+    #         ),
+    #         cpp_extension.CppExtension(
+    #             "alignment_train_cpu_binding",
+    #             sources=[
+    #                 "examples/operators/alignment_train_cpu.cpp",
+    #             ],
+    #         ),
+    #     ]
+    # )
     extensions.extend(
         [
             cpp_extension.CppExtension(
-                "fairseq.libbase",
+                "fairseq.libnat2",
                 sources=[
-                    "fairseq/clib/libbase/balanced_assignment.cpp",
-                ],
-            )
-        ]
-    )
-
-    extensions.extend(
-        [
-            cpp_extension.CppExtension(
-                "fairseq.libnat",
-                sources=[
-                    "fairseq/clib/libnat/edit_dist.cpp",
-                ],
-            ),
-            cpp_extension.CppExtension(
-                "alignment_train_cpu_binding",
-                sources=[
-                    "examples/operators/alignment_train_cpu.cpp",
+                    "fairseq/clib/libnat2/edit_dist.cpp",
                 ],
             ),
         ]
@@ -129,27 +138,34 @@ try:
     if "CUDA_HOME" in os.environ:
         extensions.extend(
             [
-                cpp_extension.CppExtension(
-                    "fairseq.libnat_cuda",
-                    sources=[
-                        "fairseq/clib/libnat_cuda/edit_dist.cu",
-                        "fairseq/clib/libnat_cuda/binding.cpp",
-                    ],
-                ),
-                cpp_extension.CppExtension(
-                    "fairseq.ngram_repeat_block_cuda",
-                    sources=[
-                        "fairseq/clib/cuda/ngram_repeat_block_cuda.cpp",
-                        "fairseq/clib/cuda/ngram_repeat_block_cuda_kernel.cu",
-                    ],
-                ),
-                cpp_extension.CppExtension(
-                    "alignment_train_cuda_binding",
-                    sources=[
-                        "examples/operators/alignment_train_kernel.cu",
-                        "examples/operators/alignment_train_cuda.cpp",
-                    ],
-                ),
+                # cpp_extension.CppExtension(
+                #     "fairseq.libnat2_cuda",
+                #     sources=[
+                #         "fairseq/clib/libnat2_cuda/edit_dist.cu",
+                #         "fairseq/clib/libnat2_cuda/bindings.cpp",
+                #     ],
+                # ),
+                # cpp_extension.CppExtension(
+                #     "fairseq.libnat_cuda",
+                #     sources=[
+                #         "fairseq/clib/libnat_cuda/edit_dist.cu",
+                #         "fairseq/clib/libnat_cuda/binding.cpp",
+                #     ],
+                # ),
+                # cpp_extension.CppExtension(
+                #     "fairseq.ngram_repeat_block_cuda",
+                #     sources=[
+                #         "fairseq/clib/cuda/ngram_repeat_block_cuda.cpp",
+                #         "fairseq/clib/cuda/ngram_repeat_block_cuda_kernel.cu",
+                #     ],
+                # ),
+                # cpp_extension.CppExtension(
+                #     "alignment_train_cuda_binding",
+                #     sources=[
+                #         "examples/operators/alignment_train_kernel.cu",
+                #         "examples/operators/alignment_train_cuda.cpp",
+                #     ],
+                # ),
             ]
         )
     cmdclass["build_ext"] = cpp_extension.BuildExtension

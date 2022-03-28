@@ -68,6 +68,17 @@ class LevenshteinTransformerModel(FairseqNATModel):
             decoder.apply(init_bert_params)
         return decoder
 
+    def adjust_tensors(self, x, y):
+        def _adjust(x_, length):
+            return torch.nn.functional.pad(x_, (0, length), value=self.pad)
+
+        if x.size(-1) != y.size(-1):
+            if x.size(-1) > y.size(-1):
+                y = _adjust(y, x.size(-1) - y.size(-1))
+            else:
+                x = _adjust(x, y.size(-1) - x.size(-1))
+        return x, y
+
     def forward(
         self, src_tokens, src_lengths, prev_output_tokens, tgt_tokens, **kwargs
     ):
@@ -76,6 +87,8 @@ class LevenshteinTransformerModel(FairseqNATModel):
 
         # encoding
         encoder_out = self.encoder(src_tokens, src_lengths=src_lengths, **kwargs)
+
+        prev_output_tokens, tgt_tokens = self.adjust_tensors(prev_output_tokens, tgt_tokens)
 
         # generate training labels for insertion
         masked_tgt_masks, masked_tgt_tokens, mask_ins_targets = _get_ins_targets(

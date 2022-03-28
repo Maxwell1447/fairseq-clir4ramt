@@ -10,4 +10,6 @@ from .nat_crf_transformer import *
 from .iterative_nonautoregressive_transformer import *
 from .cmlm_transformer import *
 from .levenshtein_transformer import *
+from .correction_levenshtein_transformer import *
+from .correction_levenshtein_transformer_full import *
 from .insertion_transformer import *

@@ -5,6 +5,7 @@
 
 import torch
 from fairseq.utils import new_arange
+import logging
 
 
 # -------------- Helper Functions --------------------------------------------------- #
@@ -211,6 +212,8 @@ def _apply_del_words(
     word_del_pred.masked_fill_(~in_masks, 1)
     word_del_pred.masked_fill_(bos_eos_masks, 0)
 
+    # logging.info(str(word_del_pred))
+
     reordering = new_arange(in_tokens).masked_fill_(word_del_pred, max_len).sort(1)[1]
 
     out_tokens = in_tokens.masked_fill(word_del_pred, padding_idx).gather(1, reordering)
@@ -220,6 +223,8 @@ def _apply_del_words(
         out_scores = in_scores.masked_fill(word_del_pred, 0).gather(1, reordering)
 
     out_attn = None
+    # logging.info("+++" + str(word_del_pred))
+    # logging.info(in_attn)
     if in_attn is not None:
         _mask = word_del_pred[:, :, None].expand_as(in_attn)
         _reordering = reordering[:, :, None].expand_as(in_attn)
@@ -268,7 +273,7 @@ def _fill(x, mask, y, padding_idx):
     """
     if x is None:
         return y
-    assert x.dim() == y.dim() and mask.size(0) == x.size(0)
+    assert x.dim() == y.dim() and mask.size(0) == x.size(0), "x: {} - y:{} --- mask:{} - x:{}".format(str(x.dim()), str(y.dim()), str(mask.size(0)), str(x.size(0)))
     assert x.dim() == 2 or (x.dim() == 3 and x.size(2) == y.size(2))
     n_selected = mask.sum()
     assert n_selected == y.size(0)

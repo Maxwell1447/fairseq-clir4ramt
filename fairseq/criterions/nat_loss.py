@@ -11,6 +11,7 @@ from fairseq import metrics, utils
 from fairseq.criterions import FairseqCriterion, register_criterion
 from fairseq.dataclass import FairseqDataclass
 from torch import Tensor
+import logging
 
 from dataclasses import dataclass, field
 
@@ -91,9 +92,12 @@ class LabelSmoothedDualImitationCriterion(FairseqCriterion):
             sample["net_input"]["src_tokens"],
             sample["net_input"]["src_lengths"],
         )
-        tgt_tokens, prev_output_tokens = sample["target"], sample["prev_target"]
+        tgt_tokens = sample["target"]
 
-        outputs = model(src_tokens, src_lengths, prev_output_tokens, tgt_tokens)
+        if "prev_target" in sample:
+            outputs = model(src_tokens, src_lengths, sample["prev_target"], tgt_tokens)
+        else:
+            outputs = model(src_tokens, src_lengths, tgt_tokens)
         losses, nll_loss = [], []
 
         for obj in outputs:

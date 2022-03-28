@@ -12,6 +12,7 @@ from fairseq.models.transformer import (
     TransformerModel,
 )
 from fairseq.modules.transformer_sentence_encoder import init_bert_params
+import logging
 
 
 def ensemble_encoder(func):
