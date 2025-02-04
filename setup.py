@@ -69,26 +69,26 @@ class NumpyExtension(Extension):
 
 
 extensions = [
-    # Extension(
-    #     "fairseq.libbleu",
-    #     sources=[
-    #         "fairseq/clib/libbleu/libbleu.cpp",
-    #         "fairseq/clib/libbleu/module.cpp",
-    #     ],
-    #     extra_compile_args=extra_compile_args,
-    # ),
-    # NumpyExtension(
-    #     "fairseq.data.data_utils_fast",
-    #     sources=["fairseq/data/data_utils_fast.pyx"],
-    #     language="c++",
-    #     extra_compile_args=extra_compile_args,
-    # ),
-    # NumpyExtension(
-    #     "fairseq.data.token_block_utils_fast",
-    #     sources=["fairseq/data/token_block_utils_fast.pyx"],
-    #     language="c++",
-    #     extra_compile_args=extra_compile_args,
-    # ),
+    Extension(
+        "fairseq.libbleu",
+        sources=[
+            "fairseq/clib/libbleu/libbleu.cpp",
+            "fairseq/clib/libbleu/module.cpp",
+        ],
+        extra_compile_args=extra_compile_args,
+    ),
+    NumpyExtension(
+        "fairseq.data.data_utils_fast",
+        sources=["fairseq/data/data_utils_fast.pyx"],
+        language="c++",
+        extra_compile_args=extra_compile_args,
+    ),
+    NumpyExtension(
+        "fairseq.data.token_block_utils_fast",
+        sources=["fairseq/data/token_block_utils_fast.pyx"],
+        language="c++",
+        extra_compile_args=extra_compile_args,
+    ),
 ]
 
 
@@ -99,32 +99,32 @@ try:
     # torch is not available when generating docs
     from torch.utils import cpp_extension
 
-    # extensions.extend(
-    #     [
-    #         cpp_extension.CppExtension(
-    #             "fairseq.libbase",
-    #             sources=[
-    #                 "fairseq/clib/libbase/balanced_assignment.cpp",
-    #             ],
-    #         )
-    #     ]
-    # )
-    # extensions.extend(
-    #     [
-    #         cpp_extension.CppExtension(
-    #             "fairseq.libnat",
-    #             sources=[
-    #                 "fairseq/clib/libnat/edit_dist.cpp",
-    #             ],
-    #         ),
-    #         cpp_extension.CppExtension(
-    #             "alignment_train_cpu_binding",
-    #             sources=[
-    #                 "examples/operators/alignment_train_cpu.cpp",
-    #             ],
-    #         ),
-    #     ]
-    # )
+    extensions.extend(
+        [
+            cpp_extension.CppExtension(
+                "fairseq.libbase",
+                sources=[
+                    "fairseq/clib/libbase/balanced_assignment.cpp",
+                ],
+            )
+        ]
+    )
+    extensions.extend(
+        [
+            cpp_extension.CppExtension(
+                "fairseq.libnat",
+                sources=[
+                    "fairseq/clib/libnat/edit_dist.cpp",
+                ],
+            ),
+            cpp_extension.CppExtension(
+                "alignment_train_cpu_binding",
+                sources=[
+                    "examples/operators/alignment_train_cpu.cpp",
+                ],
+            ),
+        ]
+    )
     extensions.extend(
         [
             cpp_extension.CppExtension(

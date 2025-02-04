@@ -229,6 +229,20 @@ class StreamingEpochBatchIterator(EpochBatchIterating):
         return itr
 
 
+class CustomBatchSampler:
+    def __init__(self, batch_sampler):
+        self.batch_sampler = batch_sampler
+
+    def __iter__(self):
+        return iter(self.batch_sampler)
+
+    # def __dict__(self):
+    #     return dict(enumerate(self.batch_sampler))
+
+    def __len__(self):
+        return len(self.batch_sampler)
+
+
 class EpochBatchIterator(EpochBatchIterating):
     """A multi-epoch iterator over a :class:`torch.utils.data.Dataset`.
 
@@ -288,6 +302,7 @@ class EpochBatchIterator(EpochBatchIterating):
         disable_shuffling=False,
         skip_remainder_batch=False,
         grouped_shuffling=False,
+        return_dataloader=False,
     ):
         assert isinstance(dataset, torch.utils.data.Dataset)
         self.dataset = dataset
@@ -313,6 +328,7 @@ class EpochBatchIterator(EpochBatchIterating):
         self._cur_epoch_itr = None
         self._next_epoch_itr = None
         self._supports_prefetch = getattr(dataset, "supports_prefetch", False)
+        self.return_dataloader = return_dataloader
 
     @property
     def frozen_batches(self):
@@ -387,6 +403,8 @@ class EpochBatchIterator(EpochBatchIterating):
 
     def end_of_epoch(self) -> bool:
         """Returns whether the most recent epoch iterator has been exhausted"""
+        if type(self._cur_epoch_itr) == torch.utils.data.DataLoader:
+            return True
         return not self._cur_epoch_itr.has_next()
 
     @property
@@ -482,15 +500,18 @@ class EpochBatchIterator(EpochBatchIterating):
         if self.num_workers > 0:
             os.environ["PYTHONWARNINGS"] = "ignore:semaphore_tracker:UserWarning"
 
-        # Create data loader
+        
+
         itr = torch.utils.data.DataLoader(
             self.dataset,
             collate_fn=self.collate_fn,
-            batch_sampler=batches[offset:],
+            batch_sampler=CustomBatchSampler(batches[offset:]),
             num_workers=self.num_workers,
             timeout=self.timeout,
             pin_memory=True,
         )
+        if self.return_dataloader:
+            return itr
 
         # Wrap with a BufferedIterator if needed
         if self.buffer_size > 0:
@@ -505,6 +526,7 @@ class EpochBatchIterator(EpochBatchIterating):
             total_num_itrs = len(batches) - 1
             itr.take(total_num_itrs)
             logger.info(f"skip final residual batch, total_num_itrs = {total_num_itrs}")
+        print(itr)
 
         return itr
 

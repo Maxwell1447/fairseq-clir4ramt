@@ -102,6 +102,7 @@ def load_indexed_dataset(
         dataset_impl_k = dataset_impl
         if dataset_impl_k is None:
             dataset_impl_k = indexed_dataset.infer_dataset_impl(path_k)
+        print(path_k)
         dataset = indexed_dataset.make_dataset(
             path_k,
             impl=dataset_impl_k or default,
